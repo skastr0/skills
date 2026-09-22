@@ -1,25 +1,22 @@
 name: Notify website
 
-# POSTs the website's Vercel deploy hook after a relevant push to main.
+# POSTs the website's Vercel deploy hook after validation succeeds.
 # Does nothing until the repository secret SITE_DEPLOY_HOOK is set.
 # Create the hook in the website Vercel project (Settings → Git → Deploy Hooks)
 # and store the full URL as SITE_DEPLOY_HOOK. Do not commit the URL.
 
 on:
-  push:
+  workflow_run:
+    workflows: [Validate skills]
+    types: [completed]
     branches: [main]
-    paths:
-      - "skills/**"
-      - "README.md"
-      - "templates/**"
-      - "scripts/**"
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   notify:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Skip until the deploy hook secret exists
@@ -43,7 +40,7 @@ jobs:
             --max-time 30 \
             -X POST \
             -H 'Content-Type: application/json' \
-            --data "{\"ref\":\"${GITHUB_SHA}\",\"repo\":\"${GITHUB_REPOSITORY}\"}" \
+            --data "{\"ref\":\"${{ github.event.workflow_run.head_sha }}\",\"repo\":\"${GITHUB_REPOSITORY}\"}" \
             -- "$SITE_DEPLOY_HOOK")
           if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
             echo "deploy hook returned HTTP $code" >&2

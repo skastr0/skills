@@ -16,14 +16,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: npm ci
+      - run: npm test
       - run: node scripts/validate-skills.mjs
-      - name: Reject a malformed fixture
-        run: |
-          set -euo pipefail
-          tmp=$(mktemp -d)
-          mkdir -p "$tmp/Bad_Name"
-          printf '%s\n' '---' 'name: Bad_Name' 'description: no' '---' > "$tmp/Bad_Name/SKILL.md"
-          if node scripts/validate-skills.mjs "$tmp"; then
-            echo "validator accepted a malformed skill" >&2
-            exit 1
-          fi

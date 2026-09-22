@@ -39,6 +39,8 @@ node scripts/new-skill.mjs my-skill
 That copies [templates/SKILL.md.template](templates/SKILL.md.template) to `skills/my-skill/SKILL.md`. Replace the description and steps, then check the catalog:
 
 ```bash
+npm ci
+npm test
 node scripts/validate-skills.mjs
 ```
 
@@ -57,11 +59,11 @@ description: What it does and when to use it.
 - `description`: 1–1024 characters. Third person. Say what it does and when to use it.
 - `license`: optional. This repository is MIT; a skill may name a different license if its contents require one.
 
-Validation rejects a bad name, a name that does not match its directory, a duplicate name, missing or oversized frontmatter fields, and a local file reference that does not exist.
+Validation uses the `yaml` package. It rejects a bad name, a name that does not match its directory, a duplicate name, a non-string `name` or `description` (`null`, `true`, `[]`), a skill directory with no `SKILL.md`, a symlink, and a local reference that is missing, percent-encoded to escape the skill, or itself a symlink.
 
 ## Website hook
 
-Pushes to `main` that touch `skills/`, `README.md`, `templates/`, or `scripts/` run [notify-site](.github/workflows/notify-site.yml). The job exits without calling anything until the repository secret `SITE_DEPLOY_HOOK` is set to the website project's Vercel deploy hook URL (Vercel → Project → Settings → Git → Deploy Hooks). The hook URL is a secret. Do not commit it, and do not invent one.
+[Validate skills](.github/workflows/validate.yml) runs on every push and pull request. [Notify website](.github/workflows/notify-site.yml) runs only after that workflow succeeds on `main`. It exits without calling anything until the repository secret `SITE_DEPLOY_HOOK` is set to the website project's Vercel deploy hook URL (Vercel → Project → Settings → Git → Deploy Hooks). The hook URL is a secret. Do not commit it, and do not invent one.
 
 ## License
 

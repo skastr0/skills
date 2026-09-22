@@ -1,6 +1,8 @@
 name: Notify website
 
-# POSTs the website's Vercel deploy hook after validation succeeds.
+# POSTs the website's Vercel deploy hook after a trusted main push validates.
+# workflow_run branches: [main] also matches a pull_request whose head branch
+# is main, including a fork. The job if is the real gate: same-repo push only.
 # Does nothing until the repository secret SITE_DEPLOY_HOOK is set.
 # Create the hook in the website Vercel project (Settings → Git → Deploy Hooks)
 # and store the full URL as SITE_DEPLOY_HOOK. Do not commit the URL.
@@ -16,7 +18,11 @@ permissions:
 
 jobs:
   notify:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Skip until the deploy hook secret exists

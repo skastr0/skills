@@ -63,7 +63,7 @@ Validation uses the `yaml` package. It rejects a bad name, a name that does not 
 
 ## Website hook
 
-[Validate skills](.github/workflows/validate.yml) runs on every push and pull request. [Notify website](.github/workflows/notify-site.yml) runs only after that workflow succeeds on `main`. It exits without calling anything until the repository secret `SITE_DEPLOY_HOOK` is set to the website project's Vercel deploy hook URL (Vercel → Project → Settings → Git → Deploy Hooks). The hook URL is a secret. Do not commit it, and do not invent one.
+[Validate skills](.github/workflows/validate.yml) runs on every push and pull request. [Notify website](.github/workflows/notify-site.yml) runs only after that workflow succeeds for a push to `main` in this repository. A pull request, including one whose head branch is `main` or that comes from a fork, does not notify. It exits without calling anything until the repository secret `SITE_DEPLOY_HOOK` is set to the website project's Vercel deploy hook URL (Vercel → Project → Settings → Git → Deploy Hooks). The hook URL is a secret. Do not commit it, and do not invent one.
 
 ## License
 

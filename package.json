@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "validate": "node scripts/validate-skills.mjs",
-    "test": "node scripts/validate-skills.test.mjs",
+    "test": "node scripts/validate-skills.test.mjs && node scripts/check-notify-guard.mjs",
     "new-skill": "node scripts/new-skill.mjs"
   },
   "dependencies": {

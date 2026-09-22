@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+*.log
+.amp/
+fixtures/
+.agents/
+.claude/
+.cursor/
+skills-lock.json

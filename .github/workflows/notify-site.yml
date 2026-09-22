@@ -1,0 +1,52 @@
+name: Notify website
+
+# POSTs the website's Vercel deploy hook after a relevant push to main.
+# Does nothing until the repository secret SITE_DEPLOY_HOOK is set.
+# Create the hook in the website Vercel project (Settings → Git → Deploy Hooks)
+# and store the full URL as SITE_DEPLOY_HOOK. Do not commit the URL.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "README.md"
+      - "templates/**"
+      - "scripts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip until the deploy hook secret exists
+        id: gate
+        env:
+          SITE_DEPLOY_HOOK: ${{ secrets.SITE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$SITE_DEPLOY_HOOK" ]; then
+            echo "SITE_DEPLOY_HOOK is unset; website build was not notified."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: POST deploy hook
+        if: steps.gate.outputs.skip != 'true'
+        env:
+          SITE_DEPLOY_HOOK: ${{ secrets.SITE_DEPLOY_HOOK }}
+        run: |
+          set -euo pipefail
+          code=$(curl --silent --show-error --output /tmp/hook-body --write-out '%{http_code}' \
+            --max-time 30 \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            --data "{\"ref\":\"${GITHUB_SHA}\",\"repo\":\"${GITHUB_REPOSITORY}\"}" \
+            -- "$SITE_DEPLOY_HOOK")
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "deploy hook returned HTTP $code" >&2
+            exit 1
+          fi
+          echo "website notified (HTTP $code)"

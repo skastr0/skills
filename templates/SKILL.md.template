@@ -1,0 +1,27 @@
+---
+name: your-skill-name
+description: What this skill does and when to use it. Third person. Include the trigger, not only the capability.
+license: MIT
+---
+
+# Your skill name
+
+One-line summary of the job.
+
+## When to use
+
+- The concrete situation that should load this skill.
+
+## Steps
+
+1. Do the first thing.
+2. Do the next thing.
+
+## Resources
+
+Keep extra docs and scripts next to this file and link them with relative paths:
+
+- `references/guide.md`
+- `scripts/check.sh`
+
+Do not publish this template as `SKILL.md`. Copy it into `skills/<name>/SKILL.md` and replace every placeholder. The directory name must match `name`.

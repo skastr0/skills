@@ -1,0 +1,11 @@
+{
+  "name": "@skastr0/skills",
+  "private": true,
+  "description": "Public agent skills catalog. Install with npx skills, not npm.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-skills.mjs",
+    "new-skill": "node scripts/new-skill.mjs"
+  }
+}
